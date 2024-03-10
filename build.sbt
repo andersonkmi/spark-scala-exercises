@@ -1,10 +1,10 @@
 organization := "org.codecraftlabs.spark"
 
-name := "mnmcount"
+name := "SparkExercises"
 
 val appVersion = "1.0.0"
 
-val appName = "mnmcount"
+val appName = "SparkExercises"
 
 version := appVersion
 
