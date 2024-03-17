@@ -7,12 +7,13 @@ object SchemaDefinitionExample {
   def main(args: Array[String]): Unit = {
     val spark = SparkSession.builder.appName("SchemaDefinitionExample").getOrCreate()
 
+    // Validating argument(s)
     if (args.length <= 0) {
       println("Usage SchemaDefinitionExample <file.json>")
       System.exit(1)
     }
 
-    val jsonFile = args(0)
+    // Defines the data frame schema
     val schema = StructType(Array(
       StructField("Id", IntegerType, nullable = false),
       StructField("First", StringType, nullable = false),
@@ -23,7 +24,8 @@ object SchemaDefinitionExample {
       StructField("Campaigns", ArrayType(StringType), nullable = false)
     ))
 
-    // /Create a DataFrame by reading from the JSON file with a predefined schema
+    // Create a DataFrame by reading from the JSON file with a predefined schema
+    val jsonFile = args(0)
     val blogsDF = spark.read.schema(schema).json(jsonFile)
     blogsDF.show(false)
     println(blogsDF.printSchema)
