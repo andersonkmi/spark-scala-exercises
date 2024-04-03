@@ -6,9 +6,12 @@ import org.codecraftlabs.spark.util.SchemaDefinition.chicagoCrimeDatasetSchemaDe
 
 object ChicagoCrimeDatasetExtractor {
   @transient private lazy val logger: Logger = Logger.getLogger("ChicagoCrimeDatasetExtractor")
-  Logger.getLogger("org.apache").setLevel(Level.ERROR)
-
   def main(args: Array[String]): Unit = {
+    Logger.getLogger("org.apache.spark").setLevel(Level.WARN)
+    Logger.getLogger("org.spark-project").setLevel(Level.WARN)
+    val rootLogger = Logger.getRootLogger
+    rootLogger.setLevel(Level.ERROR)
+
     // Create the Spark session
     val spark = SparkSession.builder.appName("ChicagoCrimeDatasetExtractor").master("local[*]").getOrCreate()
 
@@ -29,8 +32,16 @@ object ChicagoCrimeDatasetExtractor {
 
     // Reads the file(s)
     val df = spark.read.format("csv").option("header", "true").schema(schemaDefinition).load(inputFolder)
-    logger.info(df.schema)
+    df.printSchema()
     val rowCount = df.count()
     logger.info(s"Total number of rows '$rowCount'")
+
+    // Extracts some columns: id, case number, date, block, primary type, description, location description, year
+    val extractedDF = df.select("id", "caseNumber", "date", "block", "primaryType", "description", "locationDescription", "year")
+    val extractedDFCount = extractedDF.count()
+    logger.info(s"Number of rows from extracted dataframe '$extractedDFCount'")
+
+    // Writes the current dataframe back
+    extractedDF.write.format("csv").mode("overwrite").save(outputFolder)
   }
 }

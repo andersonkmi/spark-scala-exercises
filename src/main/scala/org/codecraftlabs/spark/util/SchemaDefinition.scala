@@ -12,6 +12,7 @@ object SchemaDefinition {
       StructField("iucr", StringType, nullable = false),
       StructField("primaryType", StringType, nullable = false),
       StructField("description", StringType, nullable = false),
+      StructField("locationDescription", StringType, nullable = false),
       StructField("arrest", BooleanType, nullable = false),
       StructField("domestic", BooleanType, nullable = false),
       StructField("district", StringType, nullable = false),
