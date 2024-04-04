@@ -37,7 +37,13 @@ object ChicagoCrimeDatasetExtractor {
     logger.info(s"Total number of rows '$rowCount'")
 
     // Extracts some columns: id, case number, date, block, primary type, description, location description, year
-    val extractedDF = df.select("id", "caseNumber", "date", "block", "primaryType", "description", "locationDescription")
+    val extractedDF = df.select("id",
+      "caseNumber",
+      "date",
+      "block",
+      "primaryType",
+      "description",
+      "locationDescription")
     val primaryTypeDF = extractedDF.select("primaryType").distinct()
 
     // Writes the current dataframe back
