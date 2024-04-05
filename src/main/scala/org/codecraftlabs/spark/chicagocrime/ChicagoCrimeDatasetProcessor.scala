@@ -2,6 +2,7 @@ package org.codecraftlabs.spark.chicagocrime
 
 import org.apache.log4j.Logger
 import org.apache.spark.sql.SparkSession
+import org.codecraftlabs.spark.util.SchemaDefinition.chicagoCrimeDatasetSchemaDefinition
 
 object ChicagoCrimeDatasetProcessor {
   @transient private lazy val logger: Logger = Logger.getLogger("ChicagoCrimeDatasetExtractor")
@@ -20,9 +21,10 @@ object ChicagoCrimeDatasetProcessor {
     logger.info(s"Input folder provided: '$inputFolder'")
 
     // Extracts the main columns
-    val extractedDF = chicagoCrimeDatasetExtractor.extractInitialDataset(spark, inputFolder)
+    val schemaDefinition = chicagoCrimeDatasetSchemaDefinition()
+    val df = spark.read.format("csv").option("header", "true").schema(schemaDefinition).load(inputFolder)
 
-    // Extracts the distinct primary type values
+    val extractedDF = chicagoCrimeDatasetExtractor.extractInitialDataset(df)
     val primaryTypeDF = chicagoCrimeDatasetExtractor.extractDistinctValuesFromSingleColumn("primaryType",
       extractedDF,
       sorted = true,
