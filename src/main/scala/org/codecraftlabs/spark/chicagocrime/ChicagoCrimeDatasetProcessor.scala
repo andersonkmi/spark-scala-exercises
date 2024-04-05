@@ -1,6 +1,6 @@
 package org.codecraftlabs.spark.chicagocrime
 
-import org.apache.log4j.{Level, Logger}
+import org.apache.log4j.Logger
 import org.apache.spark.sql.SparkSession
 
 object ChicagoCrimeDatasetProcessor {
@@ -24,9 +24,12 @@ object ChicagoCrimeDatasetProcessor {
 
     // Executing first step
     val extractedDF = chicagoCrimeDatasetExtractor.extractInitialDataset(spark, inputFolder)
-    val primaryTypeDF = chicagoCrimeDatasetExtractor.extractDistinctValuesFromSingleColumn("primaryType", extractedDF)
 
-    // Writes the current dataframe back
-    primaryTypeDF.write.format("csv").mode("overwrite").save(s"$outputFolder/primaryType")
+    // Extracts the distinct primary type values
+    val primaryTypeDF = chicagoCrimeDatasetExtractor.extractDistinctValuesFromSingleColumn("primaryType",
+      extractedDF,
+      sorted = true,
+      isAscendingOrder = true)
+    primaryTypeDF.write.format("csv").option("header", "true").mode("overwrite").save(s"$outputFolder/primaryType")
   }
 }
