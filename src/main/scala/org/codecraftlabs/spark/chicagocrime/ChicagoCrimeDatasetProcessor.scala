@@ -8,7 +8,6 @@ object ChicagoCrimeDatasetProcessor {
   private val chicagoCrimeDatasetExtractor = new ChicagoCrimeDatasetExtractor
 
   def main(args: Array[String]): Unit = {
-    // Create the Spark session
     val spark = SparkSession.builder.appName("ChicagoCrimeDatasetExtractor").master("local[*]").getOrCreate()
 
     if (args.length < 2) {
@@ -16,13 +15,11 @@ object ChicagoCrimeDatasetProcessor {
       sys.exit(1)
     }
 
-    // Saves the arguments passed to the job
-    // Not validating if the folders exist - just assume the user knows what he/she is doing
     val inputFolder = args(0)
     val outputFolder = args(1)
     logger.info(s"Input folder provided: '$inputFolder'")
 
-    // Executing first step
+    // Extracts the main columns
     val extractedDF = chicagoCrimeDatasetExtractor.extractInitialDataset(spark, inputFolder)
 
     // Extracts the distinct primary type values
