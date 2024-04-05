@@ -7,7 +7,6 @@ class ChicagoCrimeDatasetExtractor {
   def extractInitialDataset(spark: SparkSession, inputFolder: String): DataFrame = {
     val schemaDefinition = chicagoCrimeDatasetSchemaDefinition()
     val df = spark.read.format("csv").option("header", "true").schema(schemaDefinition).load(inputFolder)
-    df.printSchema()
     df.select("id",
       "caseNumber",
       "date",
@@ -15,5 +14,9 @@ class ChicagoCrimeDatasetExtractor {
       "primaryType",
       "description",
       "locationDescription")
+  }
+
+  def extractDistinctValuesFromSingleColumn(columnName: String, df: DataFrame): DataFrame = {
+    df.select(columnName).distinct()
   }
 }

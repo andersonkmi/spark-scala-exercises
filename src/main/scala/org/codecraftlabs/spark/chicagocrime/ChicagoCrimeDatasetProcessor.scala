@@ -5,12 +5,9 @@ import org.apache.spark.sql.SparkSession
 
 object ChicagoCrimeDatasetProcessor {
   @transient private lazy val logger: Logger = Logger.getLogger("ChicagoCrimeDatasetExtractor")
-  def main(args: Array[String]): Unit = {
-    Logger.getLogger("org.apache.spark").setLevel(Level.WARN)
-    Logger.getLogger("org.spark-project").setLevel(Level.WARN)
-    val rootLogger = Logger.getRootLogger
-    rootLogger.setLevel(Level.ERROR)
+  private val chicagoCrimeDatasetExtractor = new ChicagoCrimeDatasetExtractor
 
+  def main(args: Array[String]): Unit = {
     // Create the Spark session
     val spark = SparkSession.builder.appName("ChicagoCrimeDatasetExtractor").master("local[*]").getOrCreate()
 
@@ -26,9 +23,8 @@ object ChicagoCrimeDatasetProcessor {
     logger.info(s"Input folder provided: '$inputFolder'")
 
     // Executing first step
-    val chicagoCrimeDatasetExtractor = new ChicagoCrimeDatasetExtractor
     val extractedDF = chicagoCrimeDatasetExtractor.extractInitialDataset(spark, inputFolder)
-    val primaryTypeDF = extractedDF.select("primaryType").distinct()
+    val primaryTypeDF = chicagoCrimeDatasetExtractor.extractDistinctValuesFromSingleColumn("primaryType", extractedDF)
 
     // Writes the current dataframe back
     primaryTypeDF.write.format("csv").mode("overwrite").save(s"$outputFolder/primaryType")
