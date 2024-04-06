@@ -89,6 +89,15 @@ class ChicagoCrimeDataExtractorSpec extends AnyFlatSpec with Matchers with Befor
     primaryTypeValues(1) mustEqual "THEFT"
   }
 
+  "When calling extractDistinctValuesFromSingleColumn for primaryType column sorted descending" must "return distinct values for the primaryType" in {
+    val initialDF = chicagoCrimeDatasetExtractor.extractInitialDataset(createDataFrame())
+    val distinctPrimaryTypeDataframe = chicagoCrimeDatasetExtractor.extractDistinctValuesFromSingleColumn("primaryType", initialDF, sorted = true, isAscendingOrder = false)
+    val primaryTypeValues = distinctPrimaryTypeDataframe.collect().map(_(0)).toList
+    primaryTypeValues.length mustEqual 2
+    primaryTypeValues.head mustEqual "THEFT"
+    primaryTypeValues(1) mustEqual "DECEPTIVE PRACTICE"
+  }
+
   private def chicagoCrimeDatasetSchemaDefinition(): StructType = {
     StructType(Array(
       StructField("id", LongType, nullable = false),
