@@ -17,11 +17,11 @@ class ChicagoCrimeDatasetExtractor {
   def extractDistinctValuesFromSingleColumn(columnName: String,
                                             df: DataFrame,
                                             sorted: Boolean = false,
-                                            isAscendingOrder: Boolean = false): DataFrame = {
+                                            isAscendingOrder: Boolean = true): DataFrame = {
     if (sorted) {
       if (isAscendingOrder) df.select(columnName).distinct().sort(asc(columnName)) else df.select(columnName).distinct().sort(desc(columnName))
     } else {
-      df.select(columnName)
+      df.select(columnName).distinct()
     }
   }
 }
