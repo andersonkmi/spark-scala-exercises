@@ -18,10 +18,11 @@ class ChicagoCrimeDatasetExtractor {
                                             df: DataFrame,
                                             sorted: Boolean = false,
                                             isAscendingOrder: Boolean = true): DataFrame = {
+    val dfWithDistinctValues = df.select(columnName).distinct()
     if (sorted) {
-      if (isAscendingOrder) df.select(columnName).distinct().sort(asc(columnName)) else df.select(columnName).distinct().sort(desc(columnName))
+      if (isAscendingOrder) dfWithDistinctValues.sort(asc(columnName)) else dfWithDistinctValues.sort(desc(columnName))
     } else {
-      df.select(columnName).distinct()
+      dfWithDistinctValues
     }
   }
 
