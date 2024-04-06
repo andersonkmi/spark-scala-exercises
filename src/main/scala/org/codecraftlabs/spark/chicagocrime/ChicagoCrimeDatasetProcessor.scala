@@ -27,8 +27,7 @@ object ChicagoCrimeDatasetProcessor {
     val extractedDF = chicagoCrimeDatasetExtractor.extractInitialDataset(df)
     val primaryTypeDF = chicagoCrimeDatasetExtractor.extractDistinctValuesFromSingleColumn("primaryType",
       extractedDF,
-      sorted = true,
-      isAscendingOrder = true)
+      sorted = true)
     primaryTypeDF.write.format("csv").option("header", "true").mode("overwrite").save(s"$outputFolder/primaryType")
   }
 }
