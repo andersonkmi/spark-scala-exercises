@@ -29,5 +29,8 @@ object ChicagoCrimeDatasetProcessor {
       extractedDF,
       sorted = true)
     primaryTypeDF.write.format("csv").option("header", "true").mode("overwrite").save(s"$outputFolder/primaryType")
+
+    val crimeCountPerPrimaryType = chicagoCrimeDatasetExtractor.countCrimeGroupedByColumn(extractedDF, "primaryType")
+    crimeCountPerPrimaryType.write.format("csv").option("header", "true").mode("overwrite").save(s"$outputFolder/crime_count_per_primary_type.csv")
   }
 }

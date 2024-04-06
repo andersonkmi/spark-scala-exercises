@@ -100,7 +100,7 @@ class ChicagoCrimeDataExtractorSpec extends AnyFlatSpec with Matchers with Befor
 
   "When counting crime numbers per primary type ascending order" must "return a valid dataframe" in {
     val initialDF = chicagoCrimeDatasetExtractor.extractInitialDataset(createDataFrame())
-    val crimeCountPerPrimaryType = chicagoCrimeDatasetExtractor.groupCrimeCountByPrimaryType(initialDF, "primaryType")
+    val crimeCountPerPrimaryType = chicagoCrimeDatasetExtractor.countCrimeGroupedByColumn(initialDF, "primaryType")
     val results = crimeCountPerPrimaryType.collect().map(row => (row.getString(0), row.getLong(1))).toList
     results.length mustEqual 2
 
@@ -113,7 +113,7 @@ class ChicagoCrimeDataExtractorSpec extends AnyFlatSpec with Matchers with Befor
 
   "When counting crime numbers per primary type descending order" must "return a valid dataframe" in {
     val initialDF = chicagoCrimeDatasetExtractor.extractInitialDataset(createDataFrame())
-    val crimeCountPerPrimaryType = chicagoCrimeDatasetExtractor.groupCrimeCountByPrimaryType(initialDF, "primaryType", isSortedAscending = false)
+    val crimeCountPerPrimaryType = chicagoCrimeDatasetExtractor.countCrimeGroupedByColumn(initialDF, "primaryType", isSortedAscending = false)
     val results = crimeCountPerPrimaryType.collect().map(row => (row.getString(0), row.getLong(1))).toList
     results.length mustEqual 2
 

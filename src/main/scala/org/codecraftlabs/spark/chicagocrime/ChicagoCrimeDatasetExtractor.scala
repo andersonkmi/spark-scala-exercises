@@ -25,7 +25,7 @@ class ChicagoCrimeDatasetExtractor {
     }
   }
 
-  def groupCrimeCountByPrimaryType(df: DataFrame, columnName: String, isSortedAscending: Boolean = true): DataFrame = {
+  def countCrimeGroupedByColumn(df: DataFrame, columnName: String, isSortedAscending: Boolean = true): DataFrame = {
     val countDF = df.groupBy(col(columnName)).count()
     if (isSortedAscending) countDF.orderBy(asc("count")) else countDF.orderBy(desc("count"))
   }
