@@ -21,8 +21,26 @@ class ChicagoCrimeDataExtractorSpec extends AnyFlatSpec with Matchers with Befor
 
   private def createDataFrame(): DataFrame = {
     val sampleData = Seq(
-      Row(11646166L, "JC213529", "09/01/2018 12:01:00 AM", "082XX S INGLESIDE AVE", "0810", "THEFT", "OVER $500", "RESIDENCE", false, true),
-      Row(11645836L, "JC212333", "05/01/2016 12:25:00 AM", "055XX S ROCKWELL ST", "1153", "DECEPTIVE PRACTICE", "FINANCIAL IDENTITY THEFT OVER $ 300", "", false, true)
+      Row(11646166L,
+        "JC213529",
+        "09/01/2018 12:01:00 AM",
+        "082XX S INGLESIDE AVE",
+        "0810",
+        "THEFT",
+        "OVER $500",
+        "RESIDENCE",
+        false,
+        true),
+      Row(11645836L,
+        "JC212333",
+        "05/01/2016 12:25:00 AM",
+        "055XX S ROCKWELL ST",
+        "1153",
+        "DECEPTIVE PRACTICE",
+        "FINANCIAL IDENTITY THEFT OVER $ 300",
+        "",
+        false,
+        true)
     )
     val schema = chicagoCrimeDatasetSchemaDefinition()
     sparkSession.get.createDataFrame(sparkSession.get.sparkContext.parallelize(sampleData), schema)
@@ -34,10 +52,11 @@ class ChicagoCrimeDataExtractorSpec extends AnyFlatSpec with Matchers with Befor
   }
 
   "When extracting some columns" must "return a DF with a subset of the fields" in {
+    val expectedFields = List("id", "caseNumber", "date", "block", "primaryType", "description", "locationDescription")
     val df = createDataFrame()
     val extractedDF = chicagoCrimeDatasetExtractor.extractInitialDataset(df)
     val fieldNames = extractedDF.schema.map(item => item.name)
-    fieldNames must contain("caseNumber")
+    fieldNames mustEqual expectedFields
   }
 
   private def chicagoCrimeDatasetSchemaDefinition(): StructType = {
