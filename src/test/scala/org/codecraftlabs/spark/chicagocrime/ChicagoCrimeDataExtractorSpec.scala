@@ -9,6 +9,7 @@ import org.scalatest.matchers.must.Matchers
 
 class ChicagoCrimeDataExtractorSpec extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
   @transient var sparkSession: Option[SparkSession] = None
+  private val chicagoCrimeDatasetExtractor: ChicagoCrimeDatasetExtractor = new ChicagoCrimeDatasetExtractor
   override def beforeAll(): Unit = {
     val sparkConfig = new SparkConf()
     sparkConfig.set("spark.broadcast.compress", "false")
@@ -30,6 +31,13 @@ class ChicagoCrimeDataExtractorSpec extends AnyFlatSpec with Matchers with Befor
   "When setting up the raw dataframe" must "return a valid dataframe" in {
     val df = createDataFrame()
     df.count() mustEqual 2
+  }
+
+  "When extracting some columns" must "return a DF with a subset of the fields" in {
+    val df = createDataFrame()
+    val extractedDF = chicagoCrimeDatasetExtractor.extractInitialDataset(df)
+    val fieldNames = extractedDF.schema.map(item => item.name)
+    fieldNames must contain("caseNumber")
   }
 
   private def chicagoCrimeDatasetSchemaDefinition(): StructType = {
