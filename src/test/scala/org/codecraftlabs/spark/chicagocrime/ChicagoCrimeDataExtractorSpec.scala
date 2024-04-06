@@ -40,7 +40,19 @@ class ChicagoCrimeDataExtractorSpec extends AnyFlatSpec with Matchers with Befor
         "FINANCIAL IDENTITY THEFT OVER $ 300",
         "",
         false,
-        true)
+        true),
+      Row(
+        11034701L,
+        "JA366925",
+        "01/01/2001 11:00:00 AM",
+        "016XX E 86TH PL",
+        "1153",
+        "DECEPTIVE PRACTICE",
+        "FINANCIAL IDENTITY THEFT OVER $ 300",
+        "RESIDENCE",
+        false,
+        false
+      )
     )
     val schema = chicagoCrimeDatasetSchemaDefinition()
     sparkSession.get.createDataFrame(sparkSession.get.sparkContext.parallelize(sampleData), schema)
@@ -48,7 +60,7 @@ class ChicagoCrimeDataExtractorSpec extends AnyFlatSpec with Matchers with Befor
 
   "When setting up the raw dataframe" must "return a valid dataframe" in {
     val df = createDataFrame()
-    df.count() mustEqual 2
+    df.count() mustEqual 3
   }
 
   "When extracting some columns" must "return a DF with a subset of the fields" in {
