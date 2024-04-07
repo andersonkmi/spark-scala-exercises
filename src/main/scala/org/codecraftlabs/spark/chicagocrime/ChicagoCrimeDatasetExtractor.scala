@@ -33,7 +33,8 @@ class ChicagoCrimeDatasetExtractor {
     if (isSortedAscending) countDF.orderBy(asc("count")) else countDF.orderBy(desc("count"))
   }
 
-  def addTimestampColumn(df: DataFrame, columnName: String): DataFrame = {
+  def addTimestampColumn(df: DataFrame,
+                         columnName: String): DataFrame = {
     df.withColumn("timestamp", unix_timestamp(col(columnName), "MM/dd/yyyy HH:mm:ss a"))
   }
 }
