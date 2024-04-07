@@ -128,7 +128,6 @@ class ChicagoCrimeDataExtractorSpec extends AnyFlatSpec with Matchers with Befor
     val expectedFields = List("id", "caseNumber", "date", "block", "primaryType", "description", "locationDescription", "timestamp")
     val initialDF = chicagoCrimeDatasetExtractor.extractInitialDataset(createDataFrame())
     val dataframeWithTimestamp = chicagoCrimeDatasetExtractor.addTimestampColumn(initialDF, "date")
-    dataframeWithTimestamp.printSchema()
     val fieldNames = dataframeWithTimestamp.schema.map(item => item.name)
     fieldNames mustEqual expectedFields
   }
