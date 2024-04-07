@@ -28,13 +28,18 @@ object ChicagoCrimeDatasetProcessor {
     // Extracts the main columns
     val schemaDefinition = chicagoCrimeDatasetSchemaDefinition()
     val df = spark.read.format(Csv).option(Header, True).schema(schemaDefinition).load(inputFolder)
-
     val extractedDF = chicagoCrimeDatasetExtractor.extractInitialDataset(df)
+
+    // Insert a timestamp column
+    val dfWithTimestamp = chicagoCrimeDatasetExtractor.addTimestampColumn(extractedDF, "date")
+
+    // Extracts the crime primary types
     val primaryTypeDF = chicagoCrimeDatasetExtractor.extractDistinctValuesFromSingleColumn("primaryType",
-      extractedDF,
+      dfWithTimestamp,
       sorted = true)
     primaryTypeDF.write.format(Csv).option(Header, True).mode(Overwrite).save(s"$outputFolder/primaryType")
 
+    // Number of crime per primary type
     val crimeCountPerPrimaryType = chicagoCrimeDatasetExtractor.countCrimeGroupedByColumn(extractedDF, "primaryType")
     crimeCountPerPrimaryType.write.format(Csv).option(Header, True).mode(Overwrite).save(s"$outputFolder/crime_count_per_primary_type")
   }
