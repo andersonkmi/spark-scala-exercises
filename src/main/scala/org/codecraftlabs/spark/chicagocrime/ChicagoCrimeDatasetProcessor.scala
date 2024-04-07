@@ -6,6 +6,10 @@ import org.codecraftlabs.spark.util.SchemaDefinition.chicagoCrimeDatasetSchemaDe
 
 object ChicagoCrimeDatasetProcessor {
   @transient private lazy val logger: Logger = Logger.getLogger("ChicagoCrimeDatasetExtractor")
+  private val Csv: String = "csv"
+  private val Header: String = "header"
+  private val True:String = "true"
+  private val Overwrite: String = "overwrite"
   private val chicagoCrimeDatasetExtractor = new ChicagoCrimeDatasetExtractor
 
   def main(args: Array[String]): Unit = {
@@ -19,18 +23,19 @@ object ChicagoCrimeDatasetProcessor {
     val inputFolder = args(0)
     val outputFolder = args(1)
     logger.info(s"Input folder provided: '$inputFolder'")
+    logger.info(s"Output folder provided: '$outputFolder'")
 
     // Extracts the main columns
     val schemaDefinition = chicagoCrimeDatasetSchemaDefinition()
-    val df = spark.read.format("csv").option("header", "true").schema(schemaDefinition).load(inputFolder)
+    val df = spark.read.format(Csv).option(Header, True).schema(schemaDefinition).load(inputFolder)
 
     val extractedDF = chicagoCrimeDatasetExtractor.extractInitialDataset(df)
     val primaryTypeDF = chicagoCrimeDatasetExtractor.extractDistinctValuesFromSingleColumn("primaryType",
       extractedDF,
       sorted = true)
-    primaryTypeDF.write.format("csv").option("header", "true").mode("overwrite").save(s"$outputFolder/primaryType")
+    primaryTypeDF.write.format(Csv).option(Header, True).mode(Overwrite).save(s"$outputFolder/primaryType")
 
     val crimeCountPerPrimaryType = chicagoCrimeDatasetExtractor.countCrimeGroupedByColumn(extractedDF, "primaryType")
-    crimeCountPerPrimaryType.write.format("csv").option("header", "true").mode("overwrite").save(s"$outputFolder/crime_count_per_primary_type")
+    crimeCountPerPrimaryType.write.format(Csv).option(Header, True).mode(Overwrite).save(s"$outputFolder/crime_count_per_primary_type")
   }
 }
