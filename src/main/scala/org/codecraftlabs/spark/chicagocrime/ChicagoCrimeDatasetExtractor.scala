@@ -46,4 +46,8 @@ class ChicagoCrimeDatasetExtractor {
   def countCrimeGroupedByTypeYearMonth(df: DataFrame): DataFrame = {
     df.groupBy(col("year"), col("month"), col("primaryType")).count().orderBy(asc("year"), asc("month"), asc("primaryType"))
   }
+
+  def dropItemsWithoutYear(df: DataFrame): DataFrame = {
+    df.where(col("year").isNotNull)
+  }
 }

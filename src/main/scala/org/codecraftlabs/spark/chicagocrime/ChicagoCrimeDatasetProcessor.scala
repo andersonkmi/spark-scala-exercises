@@ -46,6 +46,7 @@ object ChicagoCrimeDatasetProcessor {
     // Group crime count per year, month, primaryType
     val dfWithYearMonth = chicagoCrimeDatasetExtractor.addYearAndMonthColumns(dfWithTimestamp)
     val crimeCountGroupedByYearMonthPrimaryType = chicagoCrimeDatasetExtractor.countCrimeGroupedByTypeYearMonth(dfWithYearMonth)
-    crimeCountGroupedByYearMonthPrimaryType.write.format(Csv).option(Header, True).mode(Overwrite).save(s"$outputFolder/crime_count_per_primary_type_year_month")
+    val filteredResultsDF = chicagoCrimeDatasetExtractor.dropItemsWithoutYear(crimeCountGroupedByYearMonthPrimaryType)
+    filteredResultsDF.write.format(Csv).option(Header, True).mode(Overwrite).save(s"$outputFolder/crime_count_per_primary_type_year_month")
   }
 }
