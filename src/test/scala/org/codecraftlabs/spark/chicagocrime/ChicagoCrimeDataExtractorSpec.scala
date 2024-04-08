@@ -132,6 +132,15 @@ class ChicagoCrimeDataExtractorSpec extends AnyFlatSpec with Matchers with Befor
     fieldNames mustEqual expectedFields
   }
 
+  "When calling the addYearAndMonth method" must "include new columns" in {
+    val expectedFields = List("id", "caseNumber", "date", "block", "primaryType", "description", "locationDescription", "timestamp", "year", "month")
+    val initialDF = chicagoCrimeDatasetExtractor.extractInitialDataset(createDataFrame())
+    val dataframeWithTimestamp = chicagoCrimeDatasetExtractor.addTimestampColumn(initialDF, "date")
+    val addYearAndMonthDF = chicagoCrimeDatasetExtractor.addYearAndMonthColumns(dataframeWithTimestamp)
+    val fieldNames = addYearAndMonthDF.schema.map(item => item.name)
+    fieldNames mustEqual expectedFields
+  }
+
   private def chicagoCrimeDatasetSchemaDefinition(): StructType = {
     StructType(Array(
       StructField("id", LongType, nullable = false),

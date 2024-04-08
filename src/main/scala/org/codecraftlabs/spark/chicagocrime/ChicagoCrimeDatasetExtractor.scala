@@ -1,7 +1,8 @@
 package org.codecraftlabs.spark.chicagocrime
 
 import org.apache.spark.sql.DataFrame
-import org.apache.spark.sql.functions.{asc, col, desc, unix_timestamp}
+import org.apache.spark.sql.functions.{asc, col, date_format, desc, unix_timestamp}
+import org.apache.spark.sql.types.TimestampType
 
 class ChicagoCrimeDatasetExtractor {
   def extractInitialDataset(df: DataFrame): DataFrame = {
@@ -35,6 +36,10 @@ class ChicagoCrimeDatasetExtractor {
 
   def addTimestampColumn(df: DataFrame,
                          columnName: String): DataFrame = {
-    df.withColumn("timestamp", unix_timestamp(col(columnName), "MM/dd/yyyy HH:mm:ss a"))
+    df.withColumn("timestamp", unix_timestamp(col(columnName), "MM/dd/yyyy HH:mm:ss a").cast(TimestampType))
+  }
+
+  def addYearAndMonthColumns(df: DataFrame): DataFrame = {
+    df.withColumn("year", date_format(col("timestamp"), "yyyy")).withColumn("month", date_format(col("timestamp"), "MM"))
   }
 }
