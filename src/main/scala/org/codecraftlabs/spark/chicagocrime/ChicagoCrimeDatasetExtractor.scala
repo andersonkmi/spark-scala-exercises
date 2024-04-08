@@ -2,7 +2,7 @@ package org.codecraftlabs.spark.chicagocrime
 
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions.{asc, col, date_format, desc, unix_timestamp}
-import org.apache.spark.sql.types.TimestampType
+import org.apache.spark.sql.types.{IntegerType, TimestampType}
 
 class ChicagoCrimeDatasetExtractor {
   def extractInitialDataset(df: DataFrame): DataFrame = {
@@ -44,6 +44,6 @@ class ChicagoCrimeDatasetExtractor {
   }
 
   def countCrimeGroupedByTypeYearMonth(df: DataFrame): DataFrame = {
-    df.groupBy(col("year"), col("month"), col("primaryType")).count()
+    df.groupBy(col("year"), col("month"), col("primaryType")).count().orderBy(asc("year"), asc("month"), asc("primaryType"))
   }
 }
