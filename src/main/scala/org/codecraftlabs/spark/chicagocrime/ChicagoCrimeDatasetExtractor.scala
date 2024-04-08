@@ -2,7 +2,7 @@ package org.codecraftlabs.spark.chicagocrime
 
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions.{asc, col, date_format, desc, unix_timestamp}
-import org.apache.spark.sql.types.{IntegerType, TimestampType}
+import org.apache.spark.sql.types.TimestampType
 
 class ChicagoCrimeDatasetExtractor {
   def extractInitialDataset(df: DataFrame): DataFrame = {
@@ -32,6 +32,10 @@ class ChicagoCrimeDatasetExtractor {
                                 isSortedAscending: Boolean = true): DataFrame = {
     val countDF = df.groupBy(col(columnName)).count()
     if (isSortedAscending) countDF.orderBy(asc("count")) else countDF.orderBy(desc("count"))
+  }
+
+  def filterRowsWithDate(df: DataFrame): DataFrame = {
+    df.where(col("date").isNotNull)
   }
 
   def addTimestampColumn(df: DataFrame,

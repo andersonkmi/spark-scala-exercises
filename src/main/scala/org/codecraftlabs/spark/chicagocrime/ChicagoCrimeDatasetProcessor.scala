@@ -30,8 +30,11 @@ object ChicagoCrimeDatasetProcessor {
     val df = spark.read.format(Csv).option(Header, True).schema(schemaDefinition).load(inputFolder)
     val extractedDF = chicagoCrimeDatasetExtractor.extractInitialDataset(df)
 
+    // Filter rows that contains a valid date
+    val dataFrameWithDate = chicagoCrimeDatasetExtractor.filterRowsWithDate(extractedDF)
+
     // Insert a timestamp column
-    val dfWithTimestamp = chicagoCrimeDatasetExtractor.addTimestampColumn(extractedDF, "date")
+    val dfWithTimestamp = chicagoCrimeDatasetExtractor.addTimestampColumn(dataFrameWithDate, "date")
 
     // Extracts the crime primary types
     val primaryTypeDF = chicagoCrimeDatasetExtractor.extractDistinctValuesFromSingleColumn("primaryType",
