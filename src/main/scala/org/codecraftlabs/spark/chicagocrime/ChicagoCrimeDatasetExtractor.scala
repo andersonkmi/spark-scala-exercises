@@ -42,4 +42,8 @@ class ChicagoCrimeDatasetExtractor {
   def addYearAndMonthColumns(df: DataFrame): DataFrame = {
     df.withColumn("year", date_format(col("timestamp"), "yyyy")).withColumn("month", date_format(col("timestamp"), "MM"))
   }
+
+  def countCrimeGroupedByTypeYearMonth(df: DataFrame): DataFrame = {
+    df.groupBy(col("year"), col("month"), col("primaryType")).count()
+  }
 }
