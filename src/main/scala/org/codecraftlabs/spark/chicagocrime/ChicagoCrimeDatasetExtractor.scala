@@ -48,10 +48,16 @@ class ChicagoCrimeDatasetExtractor {
   }
 
   def countCrimeGroupedByTypeYearMonth(df: DataFrame): DataFrame = {
-    df.groupBy(col("year"), col("month"), col("primaryType")).count().orderBy(asc("year"), asc("month"), asc("primaryType"))
+    val initialGrouping = df.groupBy(col("year"), col("month"), col("primaryType")).count().orderBy(asc("year"), asc("month"), asc("primaryType"))
+    dropItemsWithoutYear(initialGrouping)
   }
 
-  def dropItemsWithoutYear(df: DataFrame): DataFrame = {
+  def countCrimeGroupedByPrimaryTypeYear(df: DataFrame): DataFrame = {
+    val initialDF = df.groupBy(col("year"), col("primaryType")).count().orderBy(asc("year"), asc("primaryType"))
+    dropItemsWithoutYear(initialDF)
+  }
+
+  private def dropItemsWithoutYear(df: DataFrame): DataFrame = {
     df.where(col("year").isNotNull)
   }
 }

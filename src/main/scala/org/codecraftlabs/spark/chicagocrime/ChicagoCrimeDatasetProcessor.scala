@@ -12,6 +12,7 @@ object ChicagoCrimeDatasetProcessor {
   private val Overwrite: String = "overwrite"
   private val CrimeCountPerPrimaryTypeFolder = "crime_count_per_primary_type"
   private val CrimeCountPerPrimaryTypeYearMonthFolder = "crime_count_per_primary_type_year_month"
+  private val CrimeCountPerYearPrimaryTypeFolder = "crime_count_per_year_primary_type"
 
   private val chicagoCrimeDatasetExtractor = new ChicagoCrimeDatasetExtractor
 
@@ -52,8 +53,11 @@ object ChicagoCrimeDatasetProcessor {
     // Group crime count per year, month, primaryType
     val dfWithYearMonth = chicagoCrimeDatasetExtractor.addYearAndMonthColumns(dfWithTimestamp)
     val crimeCountGroupedByYearMonthPrimaryType = chicagoCrimeDatasetExtractor.countCrimeGroupedByTypeYearMonth(dfWithYearMonth)
-    val filteredResultsDF = chicagoCrimeDatasetExtractor.dropItemsWithoutYear(crimeCountGroupedByYearMonthPrimaryType)
-    saveDataFrameToCsv(filteredResultsDF, s"$outputFolder/$CrimeCountPerPrimaryTypeYearMonthFolder")
+    saveDataFrameToCsv(crimeCountGroupedByYearMonthPrimaryType, s"$outputFolder/$CrimeCountPerPrimaryTypeYearMonthFolder")
+
+    // Group crime count per year and primary type
+    val crimeCountGroupedByYearPrimaryType = chicagoCrimeDatasetExtractor.countCrimeGroupedByPrimaryTypeYear(dfWithYearMonth)
+    saveDataFrameToCsv(crimeCountGroupedByYearPrimaryType, s"$outputFolder/$CrimeCountPerYearPrimaryTypeFolder")
   }
 
   private def saveDataFrameToCsv(df: DataFrame, destination: String): Unit = {
