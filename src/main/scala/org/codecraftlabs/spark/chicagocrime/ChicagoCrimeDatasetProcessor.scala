@@ -14,6 +14,9 @@ object ChicagoCrimeDatasetProcessor {
   private val CrimeCountPerPrimaryTypeFolder = "crime_count_per_primary_type"
   private val CrimeCountPerPrimaryTypeYearMonthFolder = "crime_count_per_primary_type_year_month"
   private val CrimeCountPerYearPrimaryTypeFolder = "crime_count_per_year_primary_type"
+  private val PrimaryTypeColumn: String = "primaryType"
+  private val DateColumn: String = "date"
+  private val YearColumn: String = "year"
 
   private val chicagoCrimeDatasetExtractor = new ChicagoCrimeDatasetExtractor
 
@@ -32,23 +35,34 @@ object ChicagoCrimeDatasetProcessor {
 
     // Extracts the main columns
     val schemaDefinition = chicagoCrimeDatasetSchemaDefinition()
-    val df = spark.read.format(Csv).option(Header, True).schema(schemaDefinition).load(inputFolder)
+    val df = spark
+      .read
+      .format(Csv)
+      .option(Header, True)
+      .schema(schemaDefinition)
+      .load(inputFolder)
+
     val extractedDF = chicagoCrimeDatasetExtractor.extractInitialDataset(df)
 
     // Filter rows that contains a valid date
     val dataFrameWithDate = chicagoCrimeDatasetExtractor.filterRowsWithDate(extractedDF)
 
     // Insert a timestamp column
-    val dfWithTimestamp = chicagoCrimeDatasetExtractor.addTimestampColumn(dataFrameWithDate, "date")
+    val dfWithTimestamp = chicagoCrimeDatasetExtractor.addTimestampColumn(
+      dataFrameWithDate,
+      DateColumn)
 
     // Extracts the crime primary types
-    val primaryTypeDF = chicagoCrimeDatasetExtractor.extractDistinctValuesFromSingleColumn("primaryType",
+    val primaryTypeDF = chicagoCrimeDatasetExtractor.extractDistinctValuesFromSingleColumn(
+      PrimaryTypeColumn,
       dfWithTimestamp,
       sorted = true)
-    primaryTypeDF.write.format(Csv).option(Header, True).mode(Overwrite).save(s"$outputFolder/primaryType")
+    saveDataFrameToCsv(primaryTypeDF, s"$outputFolder/$PrimaryTypeColumn")
 
     // Number of crime per primary type
-    val crimeCountPerPrimaryType = chicagoCrimeDatasetExtractor.countCrimeGroupedByColumn(extractedDF, "primaryType")
+    val crimeCountPerPrimaryType = chicagoCrimeDatasetExtractor.countCrimeGroupedByColumn(
+      extractedDF,
+      PrimaryTypeColumn)
     saveDataFrameToCsv(crimeCountPerPrimaryType, s"$outputFolder/$CrimeCountPerPrimaryTypeFolder")
 
     // Group crime count per year, month, primaryType
@@ -61,9 +75,14 @@ object ChicagoCrimeDatasetProcessor {
     saveDataFrameToCsv(crimeCountGroupedByYearPrimaryType, s"$outputFolder/$CrimeCountPerYearPrimaryTypeFolder/all")
 
     // Group crime count per year and type - one folder per year
-    val yearsDF = chicagoCrimeDatasetExtractor.extractDistinctValuesFromSingleColumn("year", crimeCountGroupedByYearMonthPrimaryType, sorted = true)
+    val yearsDF = chicagoCrimeDatasetExtractor.extractDistinctValuesFromSingleColumn(
+      YearColumn,
+      crimeCountGroupedByYearMonthPrimaryType,
+      sorted = true)
     val yearsList = yearsDF.collect().toList.map(item => item.getString(0))
-    yearsList.foreach(year => filterByYearAndSaveCsv(crimeCountGroupedByYearPrimaryType, year, outputFolder))
+    yearsList.foreach(year => filterByYearAndSaveCsv(crimeCountGroupedByYearPrimaryType,
+      year,
+      outputFolder))
   }
 
   private def filterByYearAndSaveCsv(df: DataFrame, year: String, outputFolder: String): Unit = {
@@ -73,6 +92,11 @@ object ChicagoCrimeDatasetProcessor {
   }
 
   private def saveDataFrameToCsv(df: DataFrame, destination: String): Unit = {
-    df.write.format(Csv).option(Header, True).mode(Overwrite).save(destination)
+    df
+      .write
+      .format(Csv)
+      .option(Header, True)
+      .mode(Overwrite)
+      .save(destination)
   }
 }
