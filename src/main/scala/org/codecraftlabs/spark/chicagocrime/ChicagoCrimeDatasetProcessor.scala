@@ -58,7 +58,7 @@ object ChicagoCrimeDatasetProcessor {
 
     // Group crime count per year and primary type - single partition
     val crimeCountGroupedByYearPrimaryType = chicagoCrimeDatasetExtractor.countCrimeGroupedByPrimaryTypeYear(dfWithYearMonth)
-    saveDataFrameToCsv(crimeCountGroupedByYearPrimaryType, s"$outputFolder/$CrimeCountPerYearPrimaryTypeFolder/all_years")
+    saveDataFrameToCsv(crimeCountGroupedByYearPrimaryType, s"$outputFolder/$CrimeCountPerYearPrimaryTypeFolder/all")
 
     val yearsDF = chicagoCrimeDatasetExtractor.extractDistinctValuesFromSingleColumn("year", crimeCountGroupedByYearMonthPrimaryType, sorted = true)
     val yearsList = yearsDF.collect().toList.map(item => item.getString(0))
