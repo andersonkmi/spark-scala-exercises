@@ -1,6 +1,7 @@
 package org.codecraftlabs.spark.chicagocrime
 
 import org.apache.log4j.Logger
+import org.apache.spark.sql.functions.col
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.codecraftlabs.spark.util.SchemaDefinition.chicagoCrimeDatasetSchemaDefinition
 
@@ -55,9 +56,19 @@ object ChicagoCrimeDatasetProcessor {
     val crimeCountGroupedByYearMonthPrimaryType = chicagoCrimeDatasetExtractor.countCrimeGroupedByTypeYearMonth(dfWithYearMonth)
     saveDataFrameToCsv(crimeCountGroupedByYearMonthPrimaryType, s"$outputFolder/$CrimeCountPerPrimaryTypeYearMonthFolder")
 
-    // Group crime count per year and primary type
+    // Group crime count per year and primary type - single partition
     val crimeCountGroupedByYearPrimaryType = chicagoCrimeDatasetExtractor.countCrimeGroupedByPrimaryTypeYear(dfWithYearMonth)
     saveDataFrameToCsv(crimeCountGroupedByYearPrimaryType, s"$outputFolder/$CrimeCountPerYearPrimaryTypeFolder")
+
+    val yearsDF = chicagoCrimeDatasetExtractor.extractDistinctValuesFromSingleColumn("year", crimeCountGroupedByYearMonthPrimaryType, sorted = true)
+    val yearsList = yearsDF.collect().toList.map(item => item.getString(0))
+    yearsList.foreach(year => filterByYearAndSaveCsv(crimeCountGroupedByYearPrimaryType, year, outputFolder))
+  }
+
+  private def filterByYearAndSaveCsv(df: DataFrame, year: String, outputFolder: String): Unit = {
+    logger.info(s"Filtering crimes per year - current value '$year'")
+    val dfPerYear = df.where(col("year") === year).drop(col("year"))
+    saveDataFrameToCsv(dfPerYear, s"$outputFolder/${CrimeCountPerYearPrimaryTypeFolder}_$year")
   }
 
   private def saveDataFrameToCsv(df: DataFrame, destination: String): Unit = {
