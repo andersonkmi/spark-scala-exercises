@@ -1,7 +1,7 @@
 package org.codecraftlabs.spark.chicagocrime
 
 import org.apache.log4j.Logger
-import org.apache.spark.sql.functions.col
+import org.apache.spark.sql.functions.{col, desc}
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.codecraftlabs.spark.util.SchemaDefinition.chicagoCrimeDatasetSchemaDefinition
 
@@ -67,7 +67,7 @@ object ChicagoCrimeDatasetProcessor {
 
   private def filterByYearAndSaveCsv(df: DataFrame, year: String, outputFolder: String): Unit = {
     logger.info(s"Filtering crimes per year - current value '$year'")
-    val dfPerYear = df.where(col("year") === year).drop(col("year"))
+    val dfPerYear = df.where(col("year") === year).drop(col("year")).orderBy(desc("count"))
     saveDataFrameToCsv(dfPerYear, s"$outputFolder/$CrimeCountPerYearPrimaryTypeFolder/$year")
   }
 
