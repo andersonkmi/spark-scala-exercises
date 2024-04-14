@@ -4,7 +4,7 @@ name := "chicago-crime-dataset-job"
 
 val appVersion = "1.0.0"
 
-val appName = "ChicageCrimeDatasetProcessor"
+val appName = "ChicagoCrimeDatasetProcessor"
 
 version := appVersion
 
