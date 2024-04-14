@@ -1,10 +1,10 @@
 organization := "org.codecraftlabs.spark"
 
-name := "SparkExercises"
+name := "chicago-crime-dataset-job"
 
 val appVersion = "1.0.0"
 
-val appName = "SparkExercises"
+val appName = "ChicageCrimeDatasetProcessor"
 
 version := appVersion
 
@@ -15,7 +15,7 @@ resolvers += Classpaths.typesafeReleases
 libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-core" % "3.5.1",
   "org.apache.spark" %% "spark-sql" % "3.5.1",
-  "org.scalatest" %% "scalatest" % "3.2.17" % "test"
+  "org.scalatest" %% "scalatest" % "3.2.18" % "test"
 )
 
 Test / fork := true
