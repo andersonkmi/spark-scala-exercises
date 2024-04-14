@@ -78,9 +78,11 @@ object ChicagoCrimeDatasetProcessor {
       crimeCountGroupedByYearMonthPrimaryType,
       sorted = true)
     val yearsList = yearsDF.collect().toList.map(item => item.getString(0))
-    yearsList.foreach(year => filterByYearAndSaveCsv(crimeCountGroupedByYearPrimaryType,
-      year,
-      outputFolder))
+    yearsList.foreach(
+      year =>
+        filterByYearAndSaveCsv(crimeCountGroupedByYearPrimaryType,
+          year,
+          outputFolder))
   }
 
   private def filterByYearAndSaveCsv(df: DataFrame, year: String, outputFolder: String): Unit = {
