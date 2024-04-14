@@ -6,6 +6,17 @@ import org.apache.spark.sql.types.TimestampType
 import org.codecraftlabs.spark.util.ColumnName.{Block, CaseNumber, Count, Date, Description, Id, LocationDescription, Month, PrimaryType, Timestamp, Year}
 
 class ChicagoCrimeDatasetExtractor {
+  private val adjustPrimaryTypeValue = udf{(originalValue: String) =>
+    if (originalValue.equals("CRIM SEXUAL ASSAULT")) {
+      "CRIMINAL SEXUAL ASSAULT"
+    } else if (originalValue.equals("NON - CRIMINAL")) {
+      "NON-CRIMINAL"
+    }
+    else {
+      originalValue
+    }
+  }
+
   def extractInitialDataset(df: DataFrame): DataFrame = {
     df.select(
       Id,
@@ -15,6 +26,9 @@ class ChicagoCrimeDatasetExtractor {
       PrimaryType,
       Description,
       LocationDescription)
+      .withColumn(
+        PrimaryType,
+        adjustPrimaryTypeValue(df(PrimaryType)))
   }
 
   def extractDistinctValuesFromSingleColumn(columnName: String,
