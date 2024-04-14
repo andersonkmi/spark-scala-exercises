@@ -1,31 +1,32 @@
 package org.codecraftlabs.spark.util
 
-import org.apache.spark.sql.types.{BooleanType, IntegerType, LongType, StringType, StructField, StructType}
+import org.apache.spark.sql.types._
+import org.codecraftlabs.spark.util.ColumnName.{Arrest, Block, CaseNumber, CommunityArea, Date, Description, District, Domestic, FbiCode, Id, Iucr, Latitude, Location, LocationDescription, Longitude, PrimaryType, UpdatedOn, Ward, XCoordinate, YCoordinate, Year}
 
 object SchemaDefinition {
   def chicagoCrimeDatasetSchemaDefinition(): StructType = {
     StructType(Array(
-      StructField("id", LongType, nullable = false),
-      StructField("caseNumber", StringType, nullable = false),
-      StructField("date", StringType, nullable = false),
-      StructField("block", StringType, nullable = false),
-      StructField("iucr", StringType, nullable = false),
-      StructField("primaryType", StringType, nullable = false),
-      StructField("description", StringType, nullable = false),
-      StructField("locationDescription", StringType, nullable = false),
-      StructField("arrest", BooleanType, nullable = false),
-      StructField("domestic", BooleanType, nullable = false),
-      StructField("district", StringType, nullable = true),
-      StructField("ward", StringType, nullable = true),
-      StructField("communityArea", StringType, nullable = true),
-      StructField("fbiCode", StringType, nullable = true),
-      StructField("xCoordinate", LongType, nullable = true),
-      StructField("yCoordinate", LongType, nullable = true),
-      StructField("year", IntegerType, nullable = true),
-      StructField("updatedOn", StringType, nullable = true),
-      StructField("latitude", StringType, nullable = true),
-      StructField("longitude", StringType, nullable = true),
-      StructField("location", StringType, nullable = true)
+      StructField(Id, LongType, nullable = false),
+      StructField(CaseNumber, StringType, nullable = false),
+      StructField(Date, StringType, nullable = false),
+      StructField(Block, StringType, nullable = false),
+      StructField(Iucr, StringType, nullable = false),
+      StructField(PrimaryType, StringType, nullable = false),
+      StructField(Description, StringType, nullable = false),
+      StructField(LocationDescription, StringType, nullable = false),
+      StructField(Arrest, BooleanType, nullable = false),
+      StructField(Domestic, BooleanType, nullable = false),
+      StructField(District, StringType, nullable = true),
+      StructField(Ward, StringType, nullable = true),
+      StructField(CommunityArea, StringType, nullable = true),
+      StructField(FbiCode, StringType, nullable = true),
+      StructField(XCoordinate, LongType, nullable = true),
+      StructField(YCoordinate, LongType, nullable = true),
+      StructField(Year, IntegerType, nullable = true),
+      StructField(UpdatedOn, StringType, nullable = true),
+      StructField(Latitude, StringType, nullable = true),
+      StructField(Longitude, StringType, nullable = true),
+      StructField(Location, StringType, nullable = true)
     ))
   }
 }
