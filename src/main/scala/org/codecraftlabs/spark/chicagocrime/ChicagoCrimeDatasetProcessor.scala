@@ -1,7 +1,7 @@
 package org.codecraftlabs.spark.chicagocrime
 
 import org.apache.log4j.Logger
-import org.apache.spark.sql.functions.{col, desc}
+import org.apache.spark.sql.functions.{asc, col, desc}
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.codecraftlabs.spark.util.ColumnName.{Count, Date, PrimaryType, Year}
 import org.codecraftlabs.spark.util.SchemaDefinition.chicagoCrimeDatasetSchemaDefinition
@@ -85,6 +85,22 @@ object ChicagoCrimeDatasetProcessor {
         filterByYearAndSaveCsv(crimeCountGroupedByYearPrimaryType,
           year,
           outputFolder))
+
+    // Create a csv for each primary type including all years from the dataset
+    val crimeTypeList = primaryTypeDF.collect().toList.map(item => item.getString(0))
+    crimeTypeList.foreach(
+      item => {
+        val filteredDataFrame = crimeCountGroupedByYearPrimaryType.filter(col("type") === item && col(Year).isInCollection(yearsList))
+          .select(Year, "total")
+          .orderBy(asc(Year))
+        val folderName = replaceSpaceChars(item)
+        saveDataFrameToCsv(filteredDataFrame, s"$outputFolder/$CrimeCountPerPrimaryTypeFolder/$folderName")
+      }
+    )
+  }
+
+  private def replaceSpaceChars(input: String): String = {
+    input.replace(' ', '_')
   }
 
   private def filterByYearAndSaveCsv(df: DataFrame, year: String, outputFolder: String): Unit = {
